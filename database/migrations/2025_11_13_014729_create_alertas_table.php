@@ -6,22 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('alertas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cultivo_id')->constrained()->onDelete('cascade');
+            $table->enum('tipo', ['bajo_rendimiento', 'clima_adverso', 'registro_desactualizado', 'general']);
+            $table->string('titulo');
+            $table->text('mensaje');
+            $table->boolean('leida')->default(false);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('alertas');
     }
 };
+

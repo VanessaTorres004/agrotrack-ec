@@ -6,22 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('indicadores', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cultivo_id')->constrained()->onDelete('cascade');
+            $table->date('fecha_calculo');
+            $table->decimal('rendimiento', 5, 2)->default(0); // 0-100
+            $table->decimal('oportunidad', 5, 2)->default(0); // 0-100
+            $table->decimal('calidad', 5, 2)->default(0); // 0-100
+            $table->decimal('registro', 5, 2)->default(0); // 0-100
+            $table->decimal('factor_clima', 3, 2)->default(1.00);
+            $table->decimal('idc', 5, 2)->default(0); // Índice final calculado
+            $table->enum('clasificacion', ['excelente', 'bueno', 'en_riesgo', 'critico']);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('indicadores');
     }
 };
+

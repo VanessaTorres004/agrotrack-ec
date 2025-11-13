@@ -6,22 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('vacunas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('ganado_id')->constrained('ganado')->onDelete('cascade');
+            $table->string('tipo_vacuna');
+            $table->date('fecha_aplicacion');
+            $table->date('proxima_dosis')->nullable();
+            $table->string('veterinario')->nullable();
+            $table->text('observaciones')->nullable();
+            $table->enum('estado', ['aplicada', 'proxima', 'vencida'])->default('aplicada');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('vacunas');
     }
 };
+

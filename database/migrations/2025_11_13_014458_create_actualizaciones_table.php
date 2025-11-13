@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('actualizaciones', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cultivo_id')->constrained()->onDelete('cascade');
+            $table->date('fecha');
+            $table->enum('tipo', ['plaga', 'riego', 'fertilizacion', 'general']);
+            $table->text('observaciones');
+            $table->string('accion_tomada')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('actualizaciones');
