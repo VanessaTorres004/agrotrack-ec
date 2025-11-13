@@ -29,4 +29,3 @@ class Venta extends Model
         return $this->belongsTo(Cultivo::class);
     }
 }
-
