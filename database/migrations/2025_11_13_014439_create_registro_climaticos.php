@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('registros_climaticos', function (Blueprint $table) {
+        Schema::create('registro_climaticos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('finca_id')->constrained()->onDelete('cascade');
             $table->date('fecha');
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('registros_climaticos');
+        Schema::dropIfExists('registro_climaticos');
     }
 };
