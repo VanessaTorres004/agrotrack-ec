@@ -10,6 +10,8 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        User::truncate();
+        
         User::create([
             'name' => 'Administrador',
             'email' => 'admin@agrotrack.ec',

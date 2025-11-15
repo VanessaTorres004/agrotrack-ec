@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CultivoController;
 use App\Http\Controllers\ActualizacionController;
 use App\Http\Controllers\CosechaController;
@@ -63,7 +64,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('predicciones/{prediccion}', [PrediccionSemillaController::class, 'show'])->name('predicciones.show');
     });
     
-    // Rutas para Administradores
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/productores', [AdminController::class, 'productores'])->name('productores');
         Route::get('/cultivos', [AdminController::class, 'cultivos'])->name('cultivos');
