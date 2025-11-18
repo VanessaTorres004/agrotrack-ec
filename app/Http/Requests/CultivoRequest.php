@@ -35,7 +35,7 @@ class CultivoRequest extends FormRequest
                 'max:255',
                 'regex:/^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ\-]+$/',
             ],
-            'area' => [
+            'hectareas' => [
                 'required',
                 'numeric',
                 'min:0.01',
@@ -77,9 +77,9 @@ class CultivoRequest extends FormRequest
             'finca_id.exists' => 'La finca seleccionada no existe o no le pertenece',
             'nombre.required' => 'El nombre del cultivo es obligatorio',
             'nombre.regex' => 'El nombre solo puede contener letras, números, espacios y guiones',
-            'area.required' => 'El área es obligatoria',
-            'area.min' => 'El área debe ser mayor a 0',
-            'area.max' => 'El área excede el límite permitido',
+            'hectareas.required' => 'El área en hectáreas es obligatoria',
+            'hectareas.min' => 'El área debe ser mayor a 0.01 hectáreas',
+            'hectareas.max' => 'El área excede el límite permitido',
             'fecha_siembra.required' => 'La fecha de siembra es obligatoria',
             'fecha_siembra.before_or_equal' => 'La fecha de siembra no puede ser futura',
             'fecha_cosecha_estimada.after' => 'La fecha de cosecha debe ser posterior a la fecha de siembra',

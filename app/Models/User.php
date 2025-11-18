@@ -29,12 +29,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // Mutator para compatibilidad con versiones anteriores de Laravel
-    protected function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
-
     public function fincas()
     {
         return $this->hasMany(Finca::class);

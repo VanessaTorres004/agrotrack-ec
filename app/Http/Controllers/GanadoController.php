@@ -13,7 +13,7 @@ class GanadoController extends Controller
     {
         $user = auth()->user();
         
-        if ($user->rol === 'administrador') {
+        if ($user->isAdmin()) {
             $ganado = Ganado::with(['finca', 'vacunas'])->get();
         } else {
             $fincas = $user->fincas->pluck('id');
@@ -41,7 +41,7 @@ class GanadoController extends Controller
     public function create()
     {
         $user = auth()->user();
-        $fincas = $user->rol === 'administrador' 
+        $fincas = $user->isAdmin() 
             ? Finca::all() 
             : $user->fincas;
 
@@ -52,10 +52,11 @@ class GanadoController extends Controller
     {
         $validated = $request->validated();
         
-        // Additional security: verify finca ownership
-        $finca = Finca::where('id', $validated['finca_id'])
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+        if (!auth()->user()->isAdmin()) {
+            $finca = Finca::where('id', $validated['finca_id'])
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+        }
 
         Ganado::create($validated);
 
@@ -67,7 +68,7 @@ class GanadoController extends Controller
         $this->authorize('update', $ganado);
         
         $user = auth()->user();
-        $fincas = $user->rol === 'administrador' 
+        $fincas = $user->isAdmin() 
             ? Finca::all() 
             : $user->fincas;
 
@@ -80,10 +81,11 @@ class GanadoController extends Controller
 
         $validated = $request->validated();
         
-        // Additional security: verify finca ownership
-        $finca = Finca::where('id', $validated['finca_id'])
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+        if (!auth()->user()->isAdmin()) {
+            $finca = Finca::where('id', $validated['finca_id'])
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+        }
 
         $ganado->update($validated);
 
@@ -103,7 +105,7 @@ class GanadoController extends Controller
     {
         $user = auth()->user();
         
-        if ($user->rol === 'administrador') {
+        if ($user->isAdmin()) {
             $ganado = Ganado::with('vacunas')->get();
         } else {
             $fincas = $user->fincas->pluck('id');

@@ -77,7 +77,7 @@ class Indicador extends Model
         if ($cosechas->isEmpty()) return 50;
         
         $totalCosecha = $cosechas->sum('cantidad');
-        $areaHa = $cultivo->area;
+        $areaHa = $cultivo->hectareas; // Fixed from 'area' to 'hectareas'
         
         // Rendimiento por hectárea (simplificado)
         $rendimientoHa = $areaHa > 0 ? $totalCosecha / $areaHa : 0;

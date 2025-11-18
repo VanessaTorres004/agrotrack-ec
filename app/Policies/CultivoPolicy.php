@@ -9,16 +9,16 @@ class CultivoPolicy
 {
     public function view(User $user, Cultivo $cultivo): bool
     {
-        return $user->rol === 'administrador' || $cultivo->finca->user_id === $user->id;
+        return $user->isAdmin() || $cultivo->finca->user_id === $user->id;
     }
 
     public function update(User $user, Cultivo $cultivo): bool
     {
-        return $user->rol === 'administrador' || $cultivo->finca->user_id === $user->id;
+        return $user->isAdmin() || $cultivo->finca->user_id === $user->id;
     }
 
     public function delete(User $user, Cultivo $cultivo): bool
     {
-        return $user->rol === 'administrador' || $cultivo->finca->user_id === $user->id;
+        return $user->isAdmin() || $cultivo->finca->user_id === $user->id;
     }
 }
