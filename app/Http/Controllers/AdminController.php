@@ -10,7 +10,7 @@ use App\Models\Venta;
 use App\Models\Indicador;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf;
+use PDF;
 
 class AdminController extends Controller
 {
@@ -354,14 +354,56 @@ class AdminController extends Controller
     }
 
     private function obtenerDatosReporte($fechaInicio, $fechaFin)
-    {
-        return [
-            'fecha_inicio' => $fechaInicio,
-            'fecha_fin' => $fechaFin,
-            'total_productores' => User::where('role', 'productor')->count(),
-            'total_cultivos' => Cultivo::count(),
-            'total_produccion' => Cosecha::whereBetween('fecha_cosecha', [$fechaInicio, $fechaFin])->sum('cantidad_kg'),
-            'total_ventas' => Venta::whereBetween('fecha', [$fechaInicio, $fechaFin])->sum('total'),
-        ];
-    }
+{
+    // Resumen de productores
+    $productores = User::where('role', 'productor')
+        ->with(['fincas.cultivos.indicadores' => function($query) {
+            $query->latest()->limit(1);
+        }])
+        ->get()
+        ->map(function($productor) {
+            $fincas = $productor->fincas;
+            $totalCultivos = $fincas->sum(function($finca) {
+                return $finca->cultivos->count();
+            });
+            
+            $todosIndicadores = $fincas->flatMap(function($finca) {
+                return $finca->cultivos->flatMap(function($cultivo) {
+                    return $cultivo->indicadores;
+                });
+            });
+            
+            $promedioIDC = $todosIndicadores->avg('idc') ?? 0;
+            
+            return [
+                'nombre' => $productor->name,
+                'finca' => $fincas->first()?->nombre ?? 'Sin finca',
+                'cultivos' => $totalCultivos,
+                'promedio_idc' => $promedioIDC,
+                'estado' => $promedioIDC >= 60 ? 'Bueno' : 'Requiere atención',
+            ];
+        });
+
+    // Rendimiento por cultivo
+    $rendimientoPorCultivo = Cultivo::select('nombre')
+        ->selectRaw('AVG(
+            (SELECT idc FROM indicadores 
+             WHERE indicadores.cultivo_id = cultivos.id 
+             ORDER BY created_at DESC 
+             LIMIT 1)
+        ) as promedio')
+        ->groupBy('nombre')
+        ->get();
+
+    return [
+        'fecha_inicio' => $fechaInicio,
+        'fecha_fin' => $fechaFin,
+        'total_productores' => User::where('role', 'productor')->count(),
+        'total_cultivos' => Cultivo::count(),
+        'total_produccion' => Cosecha::whereBetween('fecha_cosecha', [$fechaInicio, $fechaFin])->sum('cantidad_kg'),
+        'total_ventas' => Venta::whereBetween('fecha', [$fechaInicio, $fechaFin])->sum('total'),
+        'productores' => $productores,
+        'rendimientoPorCultivo' => $rendimientoPorCultivo,
+    ];
+}
 }
