@@ -25,7 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         if (auth()->user()->isAdmin()) {
             // Redirigir al admin a su dashboard completo
-            return redirect()->route('admin.reportes');
+            return redirect()->route('admin.dashboard');
         }
         return app(DashboardController::class)->productor();
     })->name('dashboard');
@@ -68,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Rutas para Administrador
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'reportes'])->name('dashboard');
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/productores', [AdminController::class, 'productores'])->name('productores');
         Route::get('/cultivos', [AdminController::class, 'cultivos'])->name('cultivos');
         Route::get('/reportes', [AdminController::class, 'reportes'])->name('reportes');

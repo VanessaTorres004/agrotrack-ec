@@ -79,70 +79,70 @@
         <aside class="w-64 bg-white shadow-lg min-h-screen">
             <nav class="p-4">
                 @if(auth()->user()->isAdmin())
-                    <!-- Admin sidebar with all modules including ganado, vacunas, predicciones -->
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('dashboard') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
-                        <span>📊</span>
-                        <span class="font-medium">Dashboard</span>
-                    </a>
-                    <a href="{{ route('admin.productores') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>👥</span>
-                        <span class="font-medium">Productores</span>
-                    </a>
-                    <a href="{{ route('admin.cultivos') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>🌾</span>
-                        <span class="font-medium">Cultivos</span>
-                    </a>
-                    <a href="{{ route('ganado.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>🐄</span>
-                        <span class="font-medium">Ganado</span>
-                    </a>
-                    <a href="{{ route('clima.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>☁️</span>
-                        <span class="font-medium">Clima</span>
-                    </a>
-                    <a href="{{ route('predicciones.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>🔮</span>
-                        <span class="font-medium">Predicciones</span>
-                    </a>
-                    <a href="{{ route('admin.reportes') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>📈</span>
-                        <span class="font-medium">Reportes</span>
-                    </a>
-                @else
-                    <!-- Producer sidebar with ganado and predicciones added -->
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('dashboard') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
-                        <span>📊</span>
-                        <span class="font-medium">Inicio</span>
-                    </a>
-                    <a href="{{ route('cultivos.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('cultivos.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
-                        <span>🌾</span>
-                        <span class="font-medium">Cultivos</span>
-                    </a>
-                    <a href="{{ route('ganado.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('ganado.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
-                        <span>🐄</span>
-                        <span class="font-medium">Ganado</span>
-                    </a>
-                    <a href="{{ route('actualizaciones.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>📝</span>
-                        <span class="font-medium">Actualizaciones</span>
-                    </a>
-                    <a href="{{ route('clima.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>☁️</span>
-                        <span class="font-medium">Clima</span>
-                    </a>
-                    <a href="{{ route('cosechas.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>🚜</span>
-                        <span class="font-medium">Cosechas</span>
-                    </a>
-                    <a href="{{ route('ventas.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition text-gray-700">
-                        <span>💰</span>
-                        <span class="font-medium">Ventas</span>
-                    </a>
-                    <a href="{{ route('predicciones.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('predicciones.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
-                        <span>🔮</span>
-                        <span class="font-medium">Predicciones</span>
-                    </a>
-                @endif
+            <!-- Admin sidebar -->
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('admin.dashboard') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>📊</span>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            <a href="{{ route('admin.productores') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('admin.productores') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>👥</span>
+                <span class="font-medium">Productores</span>
+            </a>
+            <a href="{{ route('admin.cultivos') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('admin.cultivos') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>🌾</span>
+                <span class="font-medium">Cultivos</span>
+            </a>
+            <a href="{{ route('ganado.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('ganado.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>🐄</span>
+                <span class="font-medium">Ganado</span>
+            </a>
+            <a href="{{ route('clima.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('clima.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>☁️</span>
+                <span class="font-medium">Clima</span>
+            </a>
+            <a href="{{ route('predicciones.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('predicciones.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>🔮</span>
+                <span class="font-medium">Predicciones</span>
+            </a>
+            <a href="{{ route('admin.reportes') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('admin.reportes') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>📈</span>
+                <span class="font-medium">Reportes</span>
+            </a>
+        @else
+            <!-- Producer sidebar -->
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('dashboard') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>📊</span>
+                <span class="font-medium">Inicio</span>
+            </a>
+            <a href="{{ route('cultivos.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('cultivos.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>🌾</span>
+                <span class="font-medium">Cultivos</span>
+            </a>
+            <a href="{{ route('ganado.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('ganado.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>🐄</span>
+                <span class="font-medium">Ganado</span>
+            </a>
+            <a href="{{ route('actualizaciones.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('actualizaciones.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>📝</span>
+                <span class="font-medium">Actualizaciones</span>
+            </a>
+            <a href="{{ route('clima.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('clima.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>☁️</span>
+                <span class="font-medium">Clima</span>
+            </a>
+            <a href="{{ route('cosechas.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('cosechas.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>🚜</span>
+                <span class="font-medium">Cosechas</span>
+            </a>
+            <a href="{{ route('ventas.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('ventas.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>💰</span>
+                <span class="font-medium">Ventas</span>
+            </a>
+            <a href="{{ route('predicciones.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-agro-bg transition {{ request()->routeIs('predicciones.*') ? 'bg-agro-green text-white' : 'text-gray-700' }}">
+                <span>🔮</span>
+                <span class="font-medium">Predicciones</span>
+            </a>
+        @endif
             </nav>
         </aside>
 
