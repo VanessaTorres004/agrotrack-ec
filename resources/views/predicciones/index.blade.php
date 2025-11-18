@@ -49,7 +49,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-yellow-500 hover:from-green-700 hover:to-yellow-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition transform hover:scale-105 flex items-center justify-center">
+                <button type="submit" id="btnCalcular" class="w-full bg-gradient-to-r from-green-600 to-yellow-500 hover:from-green-700 hover:to-yellow-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition transform hover:scale-105 flex items-center justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -85,7 +85,7 @@
 
                         <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                             <h4 class="font-semibold text-gray-900 mb-2">Fórmula Utilizada:</h4>
-                            <p class="text-sm text-gray-700 font-mono">Predicción = Área × Densidad × UsoPromedio × FactorClima × (1 - Desperdicio)</p>
+                            <p class="text-sm text-gray-700 font-mono">Predicción = Área × Densidad × UsoPromedio × FactorClima × (1 + Desperdicio)</p>
                         </div>
                     </div>
                 </div>
@@ -148,30 +148,56 @@
 document.getElementById('prediccionForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    const btnCalcular = document.getElementById('btnCalcular');
+    const btnTextoOriginal = btnCalcular.innerHTML;
+    
+    // Deshabilitar botón y mostrar loading
+    btnCalcular.disabled = true;
+    btnCalcular.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Calculando...';
+    
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
+    
+    console.log('Datos enviados:', data);
     
     try {
         const response = await fetch('{{ route("predicciones.calcular") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(data)
         });
         
-        const result = await response.json();
+        console.log('Status de respuesta:', response.status);
         
-        if (result.success) {
+        // Verificar si la respuesta es JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("La respuesta no es JSON. Probablemente hay un error en el servidor.");
+        }
+        
+        const result = await response.json();
+        console.log('Respuesta del servidor:', result);
+        
+        // Verificar si hubo éxito
+        if (response.ok && result.success) {
+            // Mostrar mensaje
             document.getElementById('mensajeResultado').textContent = result.mensaje;
             
-            const ahorro = result.prediccion.ahorro_estimado_porcentaje;
-            if (ahorro) {
+            // Mostrar ahorro
+            const ahorro = parseFloat(result.prediccion.ahorro_estimado_porcentaje);
+            if (ahorro && ahorro > 0) {
                 document.getElementById('ahorroResultado').textContent = 
                     `Ahorro estimado: ${ahorro.toFixed(1)}% frente al ciclo anterior`;
+            } else {
+                document.getElementById('ahorroResultado').textContent = 
+                    'Primera predicción para este cultivo';
             }
             
+            // Mostrar nivel de confianza
             const confianza = result.prediccion.nivel_confianza;
             let confianzaHTML = '';
             if (confianza === 'estable') {
@@ -183,13 +209,26 @@ document.getElementById('prediccionForm').addEventListener('submit', async funct
             }
             document.getElementById('indicadorConfianza').innerHTML = confianzaHTML;
             
+            // Mostrar resultado
             document.getElementById('resultadoPrediccion').classList.remove('hidden');
             
-            // Recargar página después de 3 segundos para mostrar en historial
-            setTimeout(() => location.reload(), 3000);
+            // Recargar página después de 3 segundos
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+            
+        } else {
+            // Error del servidor
+            throw new Error(result.mensaje || 'Error desconocido al calcular la predicción');
         }
+        
     } catch (error) {
-        alert('Error al calcular la predicción');
+        console.error('Error capturado:', error);
+        alert('Error: ' + error.message);
+    } finally {
+        // Restaurar botón
+        btnCalcular.disabled = false;
+        btnCalcular.innerHTML = btnTextoOriginal;
     }
 });
 </script>

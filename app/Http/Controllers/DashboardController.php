@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Cultivo;
 use App\Models\Alerta;
 use App\Models\Indicador;
+use App\Models\Ganado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,7 @@ class DashboardController extends Controller
     {
         $totalProductores = User::where('role', 'productor')->count();
         $cultivosActivos = Cultivo::where('estado', 'activo')->count();
+        $totalGanado = Ganado::count();
         
         $promedioIDC = Indicador::selectRaw('AVG(idc) as promedio')
             ->whereIn('id', function($query) {
@@ -49,7 +51,9 @@ class DashboardController extends Controller
             }])
             ->get()
             ->map(function($productor) {
-                $cultivos = $productor->fincas->flatMap->cultivos;
+                $cultivos = $productor->fincas->flatMap(function($finca) {
+                    return $finca->cultivos;
+                });
                 return [
                     'nombre' => $productor->name,
                     'finca' => $productor->fincas->first()?->nombre ?? 'N/A',
@@ -62,6 +66,7 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact(
             'totalProductores',
             'cultivosActivos',
+            'totalGanado',
             'promedioIDC',
             'alertasActivas',
             'rendimientoPorCultivo',
@@ -84,4 +89,3 @@ class DashboardController extends Controller
         return view('productor.dashboard', compact('fincas', 'alertas'));
     }
 }
-

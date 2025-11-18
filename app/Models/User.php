@@ -34,6 +34,12 @@ class User extends Authenticatable
         return $this->hasMany(Finca::class);
     }
 
+    // Add this method to access cultivos through fincas
+    public function cultivos()
+    {
+        return $this->hasManyThrough(Cultivo::class, Finca::class);
+    }
+
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -43,4 +49,4 @@ class User extends Authenticatable
     {
         return $this->role === 'productor';
     }
-}
+};

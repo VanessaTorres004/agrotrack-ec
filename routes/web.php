@@ -24,7 +24,8 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard según rol
     Route::get('/dashboard', function () {
         if (auth()->user()->isAdmin()) {
-            return app(DashboardController::class)->admin();
+            // Redirigir al admin a su dashboard completo
+            return redirect()->route('admin.reportes');
         }
         return app(DashboardController::class)->productor();
     })->name('dashboard');
@@ -39,6 +40,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/cantones-by-provincia', [DropdownController::class, 'getCantonesByProvincia'])->name('cantones.by-provincia');
     });
     
+    // Rutas compartidas (accesibles para ambos roles)
+    Route::resource('ganado', GanadoController::class);
+    Route::get('ganado/{ganado}/vacunas', [VacunaController::class, 'historial'])->name('ganado.vacunas');
+    Route::post('ganado/{ganado}/vacunas', [VacunaController::class, 'store'])->name('vacunas.store');
+    Route::get('ganado/{ganado}/vacunas/create', [VacunaController::class, 'create'])->name('vacunas.create');
+    Route::get('ganado/alertas', [GanadoController::class, 'alertas'])->name('ganado.alertas');
+    
+    Route::get('predicciones', [PrediccionSemillaController::class, 'index'])->name('predicciones.index');
+    Route::post('predicciones/calcular', [PrediccionSemillaController::class, 'calcular'])->name('predicciones.calcular');
+    Route::get('predicciones/{prediccion}', [PrediccionSemillaController::class, 'show'])->name('predicciones.show');
+    
     // Rutas para Productores
     Route::middleware(['role:productor'])->group(function () {
         Route::resource('cultivos', CultivoController::class);
@@ -48,23 +60,15 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('cosechas', CosechaController::class);
         Route::resource('ventas', VentaController::class);
         
-        Route::resource('ganado', GanadoController::class);
-        Route::get('ganado/{ganado}/vacunas', [VacunaController::class, 'historial'])->name('ganado.vacunas');
-        Route::post('ganado/{ganado}/vacunas', [VacunaController::class, 'store'])->name('vacunas.store');
-        Route::get('ganado/{ganado}/vacunas/create', [VacunaController::class, 'create'])->name('vacunas.create');
-        Route::get('ganado/alertas', [GanadoController::class, 'alertas'])->name('ganado.alertas');
-        
         Route::resource('maquinaria', MaquinariaController::class);
         Route::get('maquinaria/{maquinaria}/mantenimientos', [MantenimientoController::class, 'historial'])->name('maquinaria.mantenimientos');
         Route::post('maquinaria/{maquinaria}/mantenimientos', [MantenimientoController::class, 'store'])->name('mantenimientos.store');
         Route::get('maquinaria/{maquinaria}/mantenimientos/create', [MantenimientoController::class, 'create'])->name('mantenimientos.create');
-        
-        Route::get('predicciones', [PrediccionSemillaController::class, 'index'])->name('predicciones.index');
-        Route::post('predicciones/calcular', [PrediccionSemillaController::class, 'calcular'])->name('predicciones.calcular');
-        Route::get('predicciones/{prediccion}', [PrediccionSemillaController::class, 'show'])->name('predicciones.show');
     });
     
+    // Rutas para Administrador
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'reportes'])->name('dashboard');
         Route::get('/productores', [AdminController::class, 'productores'])->name('productores');
         Route::get('/cultivos', [AdminController::class, 'cultivos'])->name('cultivos');
         Route::get('/reportes', [AdminController::class, 'reportes'])->name('reportes');
@@ -72,7 +76,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reportes/csv', [AdminController::class, 'exportarCSV'])->name('reportes.csv');
     });
     
-    // Clima
+    // Clima (accesible para ambos roles)
     Route::resource('clima', RegistroClimaticoController::class);
 });
 
