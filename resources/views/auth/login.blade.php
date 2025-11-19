@@ -10,43 +10,48 @@
             theme: {
                 extend: {
                     colors: {
-                        'agro-green': '#2E7D32',
-                        'agro-green-light': '#81C784',
-                        'agro-yellow': '#FBC02D',
-                        'agro-brown': '#6D4C41',
+                        'agro-primary': '#3C8D40',
+                        'agro-accent': '#79C86E',
+                        'agro-sand': '#F2F0E4',
+                        'agro-dark': '#2F2F2F',
+                        'agro-green': '#3C8D40',
                     }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Poppins', sans-serif; }
+        body { 
+            font-family: 'Inter', 'Nunito', 'Poppins', sans-serif; 
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-green-50 via-green-100 to-green-200 min-h-screen flex items-center justify-center p-4">
+<body class="bg-agro-sand min-h-screen flex items-center justify-center p-4">
     
     <div class="w-full max-w-md">
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
             
             <!-- Header -->
-            <div class="bg-agro-green px-8 py-10 text-white text-center">
-                <div class="w-20 h-20 bg-white rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <svg class="w-12 h-12 text-agro-green" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M14.779,12.18 L11.795,8.501 C11.795,8.501 13.396,8.937 13.57,8.937 C14.035,8.937 13.765,8.42 13.57,8.223 L11.185,5.192 C11.185,5.192 12.333,4.918 12.75,4.918 C13.168,4.918 12.947,4.401 12.75,4.204 L9.4,0.061 C9.203,-0.136 8.883,-0.136 8.686,0.061 L5.291,4.161 C5.093,4.358 4.805,4.876 5.291,4.876 C5.777,4.876 6.913,5.192 6.913,5.192 L4.325,8.079 C4.127,8.276 3.768,8.793 4.325,8.793 C4.644,8.793 6.275,8.502 6.275,8.502 L3.317,12.189 C3.12,12.385 2.76,12.903 3.317,12.903 C3.874,12.903 8.008,11.896 8.008,11.896 L8.008,14.941 C8.008,15.478 8.444,15.914 8.983,15.914 C9.52,15.914 9.998,15.478 9.998,14.941 L9.998,11.896 C9.998,11.896 14.373,12.895 14.778,12.895 C15.183,12.895 14.976,12.376 14.779,12.18 L14.779,12.18 Z"/>
-                    </svg>
+            <div class="bg-agro-primary px-8 py-10 text-white text-center shadow-lg">
+                <div class="w-20 h-20 bg-white/20 rounded-2xl mx-auto mb-4 flex items-center justify-center backdrop-blur-sm shadow-md">
+                    <i data-lucide="sprout" class="w-12 h-12 text-white"></i>
                 </div>
                 <h1 class="text-3xl font-bold mb-2">AgroTrack EC</h1>
-                <p class="text-green-100 text-sm">Sistema de Gestión Agrícola</p>
+                <p class="text-white/90 text-sm font-semibold">Sistema de Gestión Agrícola</p>
             </div>
 
             <!-- Form -->
             <div class="px-8 py-10">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Iniciar Sesión</h2>
+                <h2 class="text-2xl font-semibold text-agro-dark mb-6 text-center">Iniciar Sesión</h2>
                 
                 @if($errors->any())
-                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
-                    <p class="text-red-700 text-sm">{{ $errors->first() }}</p>
+                <div class="alert alert-error mb-6">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
+                        <p class="text-sm font-semibold">{{ $errors->first() }}</p>
+                    </div>
                 </div>
                 @endif
 
@@ -54,44 +59,54 @@
                     @csrf
                     
                     <div>
-                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Correo Electrónico</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            id="email" 
-                            value="{{ old('email') }}"
-                            required 
-                            autofocus
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agro-green focus:border-transparent transition"
-                            placeholder="ejemplo@correo.com"
-                        >
+                        <label for="email" class="block text-sm font-semibold text-agro-dark mb-2">Correo Electrónico</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                id="email" 
+                                value="{{ old('email') }}"
+                                required 
+                                autofocus
+                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agro-primary focus:border-transparent transition-all duration-200"
+                                placeholder="ejemplo@correo.com"
+                            >
+                        </div>
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Contraseña</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            id="password" 
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agro-green focus:border-transparent transition"
-                            placeholder="••••••••"
-                        >
+                        <label for="password" class="block text-sm font-semibold text-agro-dark mb-2">Contraseña</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                name="password" 
+                                id="password" 
+                                required
+                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agro-primary focus:border-transparent transition-all duration-200"
+                                placeholder="••••••••"
+                            >
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-between">
-                        <label class="flex items-center">
-                            <input type="checkbox" name="remember" class="w-4 h-4 text-agro-green border-gray-300 rounded focus:ring-agro-green">
-                            <span class="ml-2 text-sm text-gray-600">Recordarme</span>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="remember" class="w-4 h-4 text-agro-primary border-gray-300 rounded focus:ring-agro-primary focus:ring-2">
+                            <span class="ml-2 text-sm text-agro-dark">Recordarme</span>
                         </label>
-                        <a href="#" class="text-sm text-agro-green hover:text-green-700 font-medium">
+                        <a href="#" class="text-sm text-agro-primary hover:text-agro-accent font-medium transition-colors">
                             ¿Olvidaste tu contraseña?
                         </a>
                     </div>
 
                     <button 
                         type="submit"
-                        class="w-full bg-agro-green text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        class="w-full bg-agro-primary text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-agro-primary focus:ring-offset-2"
                     >
                         Iniciar Sesión
                     </button>
@@ -100,7 +115,7 @@
                 <div class="mt-6 text-center">
                     <p class="text-sm text-gray-600">
                         ¿No tienes cuenta? 
-                        <a href="#" class="text-agro-green hover:text-green-700 font-semibold">
+                        <a href="#" class="text-agro-primary hover:text-agro-accent font-semibold transition-colors">
                             Regístrate aquí
                         </a>
                     </p>
@@ -117,5 +132,8 @@
         </div>
     </div>
 
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

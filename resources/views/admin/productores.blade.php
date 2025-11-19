@@ -1,69 +1,102 @@
 @extends('layouts.app')
 
 @section('title', 'Productores - Admin AgroTrack EC')
+@section('page-title', 'Gestión de Productores')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex justify-between items-center">
-        <h2 class="text-3xl font-bold text-gray-800">Gestión de Productores</h2>
-        <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium">
+        <div>
+            <h2 class="text-3xl font-semibold text-agro-dark">Gestión de Productores</h2>
+            <p class="text-gray-600 mt-1">Administración de productores y fincas</p>
+        </div>
+        <a href="{{ route('admin.dashboard') }}" class="btn-secondary flex items-center gap-2">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
             Volver al Dashboard
         </a>
     </div>
 
     <!-- Estadísticas -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-agro-green">
-            <p class="text-gray-500 text-sm font-medium">Total Productores</p>
-            <p class="text-3xl font-bold text-gray-800 mt-2">{{ $productores->count() }}</p>
+        <div class="stat-card stat-card-primary">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-semibold">Total Productores</p>
+                    <p class="text-3xl font-bold text-agro-dark mt-2">{{ $productores->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-agro-primary rounded-xl flex items-center justify-center text-white shadow-md">
+                    <i data-lucide="users" class="w-6 h-6"></i>
+                </div>
+            </div>
         </div>
         
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
-            <p class="text-gray-500 text-sm font-medium">Total Fincas</p>
-            <p class="text-3xl font-bold text-gray-800 mt-2">{{ $productores->sum('fincas') }}</p>
+        <div class="stat-card border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-semibold">Total Fincas</p>
+                    <p class="text-3xl font-bold text-agro-dark mt-2">{{ $productores->sum('fincas') }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-md">
+                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                </div>
+            </div>
         </div>
         
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-agro-yellow">
-            <p class="text-gray-500 text-sm font-medium">Total Cultivos</p>
-            <p class="text-3xl font-bold text-gray-800 mt-2">{{ $productores->sum('cultivos') }}</p>
+        <div class="stat-card border-agro-accent">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-semibold">Total Cultivos</p>
+                    <p class="text-3xl font-bold text-agro-dark mt-2">{{ $productores->sum('cultivos') }}</p>
+                </div>
+                <div class="w-12 h-12 bg-agro-accent rounded-xl flex items-center justify-center text-white shadow-md">
+                    <i data-lucide="wheat" class="w-6 h-6"></i>
+                </div>
+            </div>
         </div>
         
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-600">
-            <p class="text-gray-500 text-sm font-medium">Promedio IDC General</p>
-            <p class="text-3xl font-bold text-gray-800 mt-2">{{ number_format($productores->avg('promedio_idc'), 1) }}</p>
+        <div class="stat-card border-green-600">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-semibold">Promedio IDC General</p>
+                    <p class="text-3xl font-bold text-agro-dark mt-2">{{ number_format($productores->avg('promedio_idc'), 1) }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white shadow-md">
+                    <i data-lucide="trending-up" class="w-6 h-6"></i>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Tabla de Productores -->
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <div class="card overflow-hidden p-0">
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-agro-bg">
-                    <tr class="text-left">
-                        <th class="px-6 py-4 font-semibold text-gray-700">ID</th>
-                        <th class="px-6 py-4 font-semibold text-gray-700">Nombre</th>
-                        <th class="px-6 py-4 font-semibold text-gray-700">Email</th>
-                        <th class="px-6 py-4 font-semibold text-gray-700">Fincas</th>
-                        <th class="px-6 py-4 font-semibold text-gray-700">Cultivos</th>
-                        <th class="px-6 py-4 font-semibold text-gray-700">Promedio IDC</th>
-                        <th class="px-6 py-4 font-semibold text-gray-700">Estado</th>
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">ID</th>
+                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Nombre</th>
+                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Email</th>
+                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Fincas</th>
+                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Cultivos</th>
+                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Promedio IDC</th>
+                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Estado</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody>
                     @forelse($productores as $productor)
-                    <tr class="hover:bg-gray-50 transition">
+                    <tr>
                         <td class="px-6 py-4 text-gray-700">{{ $productor['id'] }}</td>
                         <td class="px-6 py-4">
-                            <span class="font-medium text-gray-800">{{ $productor['nombre'] }}</span>
+                            <span class="font-medium text-agro-dark">{{ $productor['nombre'] }}</span>
                         </td>
                         <td class="px-6 py-4 text-gray-600">{{ $productor['email'] }}</td>
                         <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-700">
+                            <span class="badge badge-info">
                                 {{ $productor['fincas'] }}
                             </span>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-700">
+                            <span class="badge badge-success">
                                 {{ $productor['cultivos'] }}
                             </span>
                         </td>
@@ -78,10 +111,10 @@
                             </span>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="px-3 py-1 rounded-full text-sm font-medium
-                                @if($productor['estado'] === 'Excelente') bg-green-100 text-green-700
-                                @elseif($productor['estado'] === 'Bueno') bg-blue-100 text-blue-700
-                                @else bg-yellow-100 text-yellow-700
+                            <span class="badge
+                                @if($productor['estado'] === 'Excelente') badge-success
+                                @elseif($productor['estado'] === 'Bueno') badge-info
+                                @else badge-warning
                                 @endif
                             ">
                                 {{ $productor['estado'] }}
@@ -91,7 +124,10 @@
                     @empty
                     <tr>
                         <td colspan="7" class="px-6 py-8 text-center text-gray-500">
-                            No hay productores registrados
+                            <div class="flex flex-col items-center gap-2">
+                                <i data-lucide="inbox" class="w-12 h-12 text-gray-400"></i>
+                                <p>No hay productores registrados</p>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -100,4 +136,10 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    lucide.createIcons();
+</script>
+@endpush
 @endsection

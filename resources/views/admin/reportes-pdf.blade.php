@@ -173,7 +173,7 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>🌾 AgroTrack EC</h1>
+        <h1>AgroTrack EC</h1>
         <p>Reporte Agrícola Integral</p>
     </div>
 
@@ -186,7 +186,7 @@
 
     <!-- Estadísticas Generales -->
     <div class="section estadisticas">
-        <h2>📊 Estadísticas Generales</h2>
+        <h2>Estadísticas Generales</h2>
         
         <div class="stats-grid">
             <div class="stat-row">
@@ -213,7 +213,7 @@
     <!-- Tabla de Productores -->
     @if(isset($productores) && $productores->count() > 0)
     <div class="section">
-        <h2>👥 Resumen de Productores</h2>
+        <h2>Resumen de Productores</h2>
         <table>
             <thead>
                 <tr>
@@ -246,7 +246,7 @@
     <!-- Rendimiento por Cultivo -->
     @if(isset($rendimientoPorCultivo) && $rendimientoPorCultivo->count() > 0)
     <div class="section">
-        <h2>🌾 Rendimiento por Tipo de Cultivo</h2>
+        <h2>Rendimiento por Tipo de Cultivo</h2>
         <table>
             <thead>
                 <tr>
