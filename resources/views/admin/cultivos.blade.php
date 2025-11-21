@@ -4,226 +4,259 @@
 @section('page-title', 'Gestión de Cultivos')
 
 @section('content')
-<div class="space-y-6">
-    <div class="flex justify-between items-center">
-        <div>
-            <h2 class="text-3xl font-semibold text-agro-dark">Gestión de Cultivos</h2>
-            <p class="text-gray-600 mt-1">Administración y monitoreo de cultivos</p>
-        </div>
-        <a href="{{ route('admin.dashboard') }}" class="btn-secondary flex items-center gap-2">
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            Volver al Dashboard
-        </a>
-    </div>
+<div class="min-h-screen bg-agro-sand py-6">
 
-    <!-- Estadísticas -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="stat-card stat-card-primary">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 text-sm font-semibold">Total Cultivos</p>
-                    <p class="text-3xl font-bold text-agro-dark mt-2">{{ $cultivos->count() }}</p>
-                </div>
-                <div class="w-12 h-12 bg-agro-primary rounded-xl flex items-center justify-center text-white shadow-md">
-                    <i data-lucide="wheat" class="w-6 h-6"></i>
-                </div>
-            </div>
-        </div>
-        
-        <div class="stat-card border-blue-500">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 text-sm font-semibold">Total Hectáreas</p>
-                    <p class="text-3xl font-bold text-agro-dark mt-2">{{ number_format($cultivos->sum('hectareas'), 2) }}</p>
-                </div>
-                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-md">
-                    <i data-lucide="map" class="w-6 h-6"></i>
-                </div>
-            </div>
-        </div>
-        
-        <div class="stat-card border-agro-accent">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 text-sm font-semibold">Cultivos Activos</p>
-                    <p class="text-3xl font-bold text-agro-dark mt-2">{{ $cultivos->where('estado', 'activo')->count() }}</p>
-                </div>
-                <div class="w-12 h-12 bg-agro-accent rounded-xl flex items-center justify-center text-white shadow-md">
-                    <i data-lucide="check-circle" class="w-6 h-6"></i>
-                </div>
-            </div>
-        </div>
-        
-        <div class="stat-card border-amber-500">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 text-sm font-semibold">IDC Promedio</p>
-                    <p class="text-3xl font-bold text-agro-dark mt-2">
-                        {{ $cultivos->where('idc', '!=', 'N/A')->avg('idc') ? number_format($cultivos->where('idc', '!=', 'N/A')->avg('idc'), 1) : 'N/A' }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-white shadow-md">
-                    <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <!-- Filtros -->
-    <div class="card">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-                <label class="block text-sm font-semibold text-agro-dark mb-2">Buscar por nombre</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+        {{-- HEADER --}}
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">🌾 Gestión de Cultivos</h1>
+            <p class="mt-2 text-gray-600">Administración, monitoreo y clasificación de cultivos</p>
+        </div>
+
+        {{-- TARJETAS RESUMEN --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+            {{-- Total --}}
+            <div class="bg-white shadow rounded-lg p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-gray-600">Total de Cultivos</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ $cultivos->count() }}</p>
                     </div>
-                    <input type="text" id="searchNombre" class="input-modern pl-10" placeholder="Buscar cultivo...">
+                    <div class="p-3 bg-agro-primary/15 text-agro-primary rounded-full">
+                        <i data-lucide="wheat" class="w-7 h-7"></i>
+                    </div>
                 </div>
             </div>
-            <div>
-                <label class="block text-sm font-semibold text-agro-dark mb-2">Estado</label>
-                <select id="filterEstado" class="input-modern">
-                    <option value="">Todos</option>
-                    <option value="activo">Activo</option>
-                    <option value="cosechado">Cosechado</option>
-                    <option value="inactivo">Inactivo</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-agro-dark mb-2">Clasificación IDC</label>
-                <select id="filterClasificacion" class="input-modern">
-                    <option value="">Todas</option>
-                    <option value="Excelente">Excelente</option>
-                    <option value="Bueno">Bueno</option>
-                    <option value="En Riesgo">En Riesgo</option>
-                    <option value="Crítico">Crítico</option>
-                </select>
-            </div>
-            <div class="flex items-end">
-                <button onclick="resetFilters()" class="w-full btn-secondary flex items-center justify-center gap-2">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                    Limpiar Filtros
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Tabla de Cultivos -->
-    <div class="card overflow-hidden p-0">
-        <div class="overflow-x-auto">
-            <table class="table-modern" id="cultivosTable">
-                <thead>
-                    <tr>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">ID</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Cultivo</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Variedad</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Finca</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Productor</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Hectáreas</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Estado</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">IDC</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Clasificación</th>
-                        <th class="px-6 py-4 font-semibold text-agro-dark text-left">Fecha Siembra</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($cultivos as $cultivo)
-                    <tr class="hover:bg-gray-50 transition" data-estado="{{ $cultivo['estado'] }}" data-clasificacion="{{ $cultivo['clasificacion'] }}">
-                        <td class="px-6 py-4 text-gray-700">{{ $cultivo['id'] }}</td>
-                        <td class="px-6 py-4">
-                            <span class="font-medium text-agro-dark">{{ $cultivo['nombre'] }}</span>
-                        </td>
-                        <td class="px-6 py-4 text-gray-600">{{ $cultivo['variedad'] ?? 'N/A' }}</td>
-                        <td class="px-6 py-4 text-gray-700">{{ $cultivo['finca'] }}</td>
-                        <td class="px-6 py-4 text-gray-700">{{ $cultivo['productor'] }}</td>
-                        <td class="px-6 py-4">
-                            <span class="font-medium">{{ number_format($cultivo['hectareas'], 2) }} ha</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="badge
-                                @if($cultivo['estado'] === 'activo') badge-success
-                                @elseif($cultivo['estado'] === 'cosechado') badge-info
-                                @else badge-warning
-                                @endif
-                            ">
-                                {{ ucfirst($cultivo['estado']) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="font-semibold text-lg text-agro-primary">{{ is_numeric($cultivo['idc']) ? number_format($cultivo['idc'], 1) : $cultivo['idc'] }}</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="badge
-                                @if($cultivo['clasificacion'] === 'Excelente') badge-success
-                                @elseif($cultivo['clasificacion'] === 'Bueno') badge-info
-                                @elseif($cultivo['clasificacion'] === 'En Riesgo') badge-warning
-                                @elseif($cultivo['clasificacion'] === 'Crítico') badge-danger
-                                @else badge-warning
-                                @endif
-                            ">
-                                {{ $cultivo['clasificacion'] }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-gray-600">{{ $cultivo['fecha_siembra'] }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="10" class="px-6 py-8 text-center text-gray-500">
-                            <div class="flex flex-col items-center gap-2">
-                                <i data-lucide="inbox" class="w-12 h-12 text-gray-400"></i>
-                                <p>No hay cultivos registrados</p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+            {{-- Hectáreas --}}
+            <div class="bg-white shadow rounded-lg p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-gray-600">Total Hectáreas</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ number_format($cultivos->sum('hectareas'), 2) }}</p>
+                    </div>
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-full">
+                        <i data-lucide="map" class="w-7 h-7"></i>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Activos --}}
+            <div class="bg-white shadow rounded-lg p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-gray-600">Cultivos Activos</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">
+                            {{ $cultivos->where('estado', 'activo')->count() }}
+                        </p>
+                    </div>
+                    <div class="p-3 bg-green-100 text-green-600 rounded-full">
+                        <i data-lucide="power" class="w-7 h-7"></i>
+                    </div>
+                </div>
+            </div>
+
+            {{-- IDC --}}
+            <div class="bg-white shadow rounded-lg p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-gray-600">IDC Promedio</p>
+                        <p class="text-3xl font-bold text-agro-primary mt-2">
+                            {{ $cultivos->avg('idc') ? number_format($cultivos->avg('idc'),1) : 'N/A' }}
+                        </p>
+                    </div>
+                    <div class="p-3 bg-agro-primary/15 text-agro-primary rounded-full">
+                        <i data-lucide="bar-chart-3" class="w-7 h-7"></i>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+        {{-- FILTROS --}}
+        <div class="bg-white shadow rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Filtros</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                {{-- Nombre --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Buscar por Nombre</label>
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3"></i>
+                        <input id="searchNombre" type="text"
+                            class="pl-10 input-modern"
+                            placeholder="Buscar cultivo...">
+                    </div>
+                </div>
+
+                {{-- Estado --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Estado</label>
+                    <select id="filterEstado" class="input-modern">
+                        <option value="">Todos</option>
+                        <option value="activo">Activo</option>
+                        <option value="cosechado">Cosechado</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+
+                {{-- Clasificación --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Clasificación IDC</label>
+                    <select id="filterClasificacion" class="input-modern">
+                        <option value="">Todas</option>
+                        <option value="Excelente">Excelente</option>
+                        <option value="Bueno">Bueno</option>
+                        <option value="En Riesgo">En Riesgo</option>
+                        <option value="Crítico">Crítico</option>
+                    </select>
+                </div>
+
+                {{-- Reset --}}
+                <div class="flex items-end">
+                    <button onclick="resetFilters()"
+                        class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium flex gap-2 justify-center">
+                        <i data-lucide="x" class="w-4 h-4"></i> Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- TABLA PROFESIONAL --}}
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">Listado de Cultivos</h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200" id="cultivosTable">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="th">ID</th>
+                            <th class="th">Cultivo</th>
+                            <th class="th">Variedad</th>
+                            <th class="th">Finca</th>
+                            <th class="th">Productor</th>
+                            <th class="th">Hectáreas</th>
+                            <th class="th">Estado</th>
+                            <th class="th">IDC</th>
+                            <th class="th">Clasificación</th>
+                            <th class="th">Fecha Siembra</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        @forelse($cultivos as $cultivo)
+                        <tr data-estado="{{ $cultivo['estado'] }}" data-clasificacion="{{ $cultivo['clasificacion'] }}">
+                            <td class="td">{{ $cultivo['id'] }}</td>
+                            <td class="td font-semibold text-gray-900">{{ $cultivo['nombre'] }}</td>
+                            <td class="td text-gray-600">{{ $cultivo['variedad'] ?? 'N/A' }}</td>
+                            <td class="td text-gray-700">{{ $cultivo['finca'] }}</td>
+                            <td class="td text-gray-700">{{ $cultivo['productor'] }}</td>
+                            <td class="td font-medium">{{ number_format($cultivo['hectareas'], 2) }} ha</td>
+
+                            {{-- Estado --}}
+                            <td class="td">
+                                @php
+                                    $stateColors = [
+                                        'activo' => 'bg-green-100 text-green-700',
+                                        'cosechado' => 'bg-blue-100 text-blue-700',
+                                        'inactivo' => 'bg-gray-100 text-gray-600',
+                                    ];
+                                @endphp
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $stateColors[$cultivo['estado']] ?? 'bg-gray-100 text-gray-600' }}">
+                                    {{ ucfirst($cultivo['estado']) }}
+                                </span>
+                            </td>
+
+                            {{-- IDC --}}
+                            <td class="td font-semibold text-agro-primary">
+                                {{ is_numeric($cultivo['idc']) ? number_format($cultivo['idc'], 1) : $cultivo['idc'] }}
+                            </td>
+
+                            {{-- Clasificación --}}
+                            <td class="td">
+                                @php
+                                    $classColors = [
+                                        'Excelente' => 'bg-green-100 text-green-700',
+                                        'Bueno' => 'bg-agro-accent/20 text-agro-accent',
+                                        'En Riesgo' => 'bg-yellow-100 text-yellow-700',
+                                        'Crítico' => 'bg-red-100 text-red-700'
+                                    ];
+                                @endphp
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $classColors[$cultivo['clasificacion']] ?? 'bg-gray-100 text-gray-600' }}">
+                                    {{ $cultivo['clasificacion'] }}
+                                </span>
+                            </td>
+
+                            <td class="td text-gray-600">{{ $cultivo['fecha_siembra'] }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="10" class="px-6 py-8 text-center text-gray-500">
+                                <div class="flex flex-col items-center gap-2">
+                                    <i data-lucide="inbox" class="w-12 h-12 text-gray-400"></i>
+                                    <p>No hay cultivos registrados</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
+
+{{-- ESTILOS REUSABLES PARA LA TABLA --}}
+<style>
+    .th {
+        @apply px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wide;
+    }
+    .td {
+        @apply px-6 py-4 whitespace-nowrap text-sm text-gray-700;
+    }
+</style>
 
 @push('scripts')
 <script>
     lucide.createIcons();
-    
-    // Simple client-side filtering
+
+    // === FILTROS ===
+    const filterTable = () => {
+        const search = document.getElementById('searchNombre').value.toLowerCase();
+        const estado = document.getElementById('filterEstado').value.toLowerCase();
+        const clasificacion = document.getElementById('filterClasificacion').value;
+
+        document.querySelectorAll('#cultivosTable tbody tr').forEach(row => {
+
+            const nombre = row.cells[1].innerText.toLowerCase();
+            const rowEstado = row.dataset.estado.toLowerCase();
+            const rowClasif = row.dataset.clasificacion;
+
+            const matchNombre = nombre.includes(search);
+            const matchEstado = !estado || rowEstado === estado;
+            const matchClasif = !clasificacion || rowClasif === clasificacion;
+
+            row.style.display = (matchNombre && matchEstado && matchClasif) ? '' : 'none';
+        });
+    };
+
     document.getElementById('searchNombre').addEventListener('input', filterTable);
     document.getElementById('filterEstado').addEventListener('change', filterTable);
     document.getElementById('filterClasificacion').addEventListener('change', filterTable);
 
-    function filterTable() {
-        const searchNombre = document.getElementById('searchNombre').value.toLowerCase();
-        const filterEstado = document.getElementById('filterEstado').value.toLowerCase();
-        const filterClasificacion = document.getElementById('filterClasificacion').value;
-        
-        const rows = document.querySelectorAll('#cultivosTable tbody tr');
-        
-        rows.forEach(row => {
-            if (!row.dataset.estado) return; // Skip empty row
-            
-            const nombre = row.cells[1].textContent.toLowerCase();
-            const estado = row.dataset.estado.toLowerCase();
-            const clasificacion = row.dataset.clasificacion;
-            
-            const matchNombre = nombre.includes(searchNombre);
-            const matchEstado = !filterEstado || estado === filterEstado;
-            const matchClasificacion = !filterClasificacion || clasificacion === filterClasificacion;
-            
-            if (matchNombre && matchEstado && matchClasificacion) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-
-    function resetFilters() {
+    const resetFilters = () => {
         document.getElementById('searchNombre').value = '';
         document.getElementById('filterEstado').value = '';
         document.getElementById('filterClasificacion').value = '';
         filterTable();
-    }
+    };
 </script>
 @endpush
+
 @endsection
