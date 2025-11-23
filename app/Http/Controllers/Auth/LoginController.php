@@ -16,23 +16,27 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // Validación del login
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        // Intentar login
+        if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
 
-            if (Auth::user()->isAdmin()) {
-                return redirect()->intended('/dashboard');
+            // 🔥 Redirigir según rol
+            if (auth()->user()->isAdmin()) {
+                return redirect()->route('admin.dashboard');
             }
-            
-            return redirect()->intended('/dashboard');
+
+            return redirect()->route('dashboard');
         }
 
+        // Error si no coincide email/contraseña
         throw ValidationException::withMessages([
-            'email' => 'Las credenciales no coinciden con nuestros registros.',
+            'email' => __('Credenciales incorrectas.'),
         ]);
     }
 
@@ -43,6 +47,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }

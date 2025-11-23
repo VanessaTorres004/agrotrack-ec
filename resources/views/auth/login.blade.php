@@ -113,12 +113,12 @@
                 </form>
 
                 <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600">
-                        ¿No tienes cuenta? 
-                        <a href="#" class="text-agro-primary hover:text-agro-accent font-semibold transition-colors">
-                            Regístrate aquí
-                        </a>
-                    </p>
+                        <p class="text-sm text-gray-600">
+                            ¿No tienes cuenta? 
+                            <a href="{{ route('register') }}" class="text-agro-primary hover:text-agro-accent font-semibold transition-colors">
+                                Regístrate aquí
+                            </a>
+                        </p>
                 </div>
             </div>
 
