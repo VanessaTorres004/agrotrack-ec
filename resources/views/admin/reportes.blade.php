@@ -84,11 +84,25 @@
                 </p>
             </div>
 
-            <!-- Icono corregido -->
+            <!-- Ícono SVG Premium -->
             <div class="w-14 h-14 bg-amber-600 text-white rounded-xl flex items-center justify-center shadow">
-                <i data-lucide="cow" class="w-7 h-7"></i>
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    stroke-width="2" 
+                    stroke-linecap="round" 
+                    stroke-linejoin="round" 
+                    class="w-7 h-7"
+                >
+                    <path d="M8 3H5L3 7v4a9 9 0 009 9v0a9 9 0 009-9V7l-2-4h-3" />
+                    <path d="M7 10h.01" />
+                    <path d="M17 10h.01" />
+                </svg>
             </div>
         </div>
+
 
 
         <!-- IDC -->

@@ -71,6 +71,7 @@
                     <p class="text-xs text-white/70">Sistema Agrícola</p>
                 </div>
             </div>
+            
         </div>
 
         <!-- MENÚ -->
@@ -103,10 +104,29 @@
                     <span>Cultivos</span>
                 </a>
 
+
                 <a href="{{ route('ganado.index') }}"
                 class="{{ request()->routeIs('ganado.*') ? $active : '' }} {{ $menuClasses }}">
-                    <i data-lucide="cow" class="w-5 h-5"></i>
+
+                    <!-- Ícono SVG de Ganado (NO Lucide, NO Emoji) -->
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        stroke-width="2" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        class="w-5 h-5 text-white"
+                    >
+                        <path d="M8 3H5L3 7v4a9 9 0 009 9v0a9 9 0 009-9V7l-2-4h-3" />
+                        <path d="M7 10h.01" />
+                        <path d="M17 10h.01" />
+                    </svg>
+
                     <span>Ganado</span>
+                </a>
+
                 </a>
 
                 <a href="{{ route('maquinaria.index') }}"
