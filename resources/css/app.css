@@ -1,17 +1,8 @@
-@import 'tailwindcss';
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@theme {
-    --font-sans: 'Inter', 'Nunito', 'Poppins', ui-sans-serif, system-ui, sans-serif;
-}
-
+/* TIPOGRAFÍA BASE */
 @layer base {
     body {
         @apply bg-agro-sand text-agro-dark;
@@ -19,157 +10,63 @@
         font-weight: 400;
         line-height: 1.6;
     }
-    
+
     h1, h2, h3, h4, h5, h6 {
         @apply font-semibold text-agro-dark;
         line-height: 1.2;
     }
-    
-    h1 {
-        @apply text-3xl md:text-4xl;
-    }
-    
-    h2 {
-        @apply text-2xl md:text-3xl;
-    }
-    
-    h3 {
-        @apply text-xl md:text-2xl;
-    }
-    
-    h4 {
-        @apply text-lg md:text-xl;
-    }
+
+    h1 { @apply text-3xl md:text-4xl; }
+    h2 { @apply text-2xl md:text-3xl; }
+    h3 { @apply text-xl md:text-2xl; }
+    h4 { @apply text-lg md:text-xl; }
 }
 
+/* COMPONENTES PERSONALIZADOS */
 @layer components {
-    /* Botones */
+
     .btn-primary {
-        @apply px-6 py-3 bg-agro-primary text-white rounded-lg font-semibold transition-all duration-200 hover:bg-opacity-90 hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-agro-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply px-6 py-3 bg-agro-primary text-white rounded-lg font-semibold 
+               transition-all duration-200 hover:bg-opacity-90 hover:shadow-lg 
+               hover:-translate-y-0.5 focus:outline-none focus:ring-2 
+               focus:ring-agro-primary focus:ring-offset-2 disabled:opacity-50 
+               disabled:cursor-not-allowed;
     }
-    
+
     .btn-secondary {
-        @apply px-6 py-3 bg-white text-agro-primary border-2 border-agro-primary rounded-lg font-semibold transition-all duration-200 hover:bg-agro-sand hover:border-agro-accent focus:outline-none focus:ring-2 focus:ring-agro-primary focus:ring-offset-2;
+        @apply px-6 py-3 bg-white text-agro-primary border-2 border-agro-primary 
+               rounded-lg font-semibold transition-all duration-200 
+               hover:bg-agro-sand hover:border-agro-accent 
+               focus:outline-none focus:ring-2 focus:ring-agro-primary 
+               focus:ring-offset-2;
     }
-    
+
     .btn-danger {
-        @apply px-6 py-3 bg-red-600 text-white rounded-lg font-semibold transition-all duration-200 hover:bg-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+        @apply px-6 py-3 bg-red-600 text-white rounded-lg font-semibold 
+               transition-all duration-200 hover:bg-red-700 hover:shadow-lg 
+               focus:outline-none focus:ring-2 focus:ring-red-500 
+               focus:ring-offset-2;
     }
-    
-    /* Cards */
+
     .card {
-        @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-shadow duration-200 hover:shadow-md;
+        @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 
+               transition-shadow duration-200 hover:shadow-md;
     }
-    
+
     .card-header {
         @apply border-b border-gray-200 pb-4 mb-6;
     }
-    
-    /* Inputs */
+
     .input-modern {
-        @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agro-primary focus:border-transparent transition-all duration-200 bg-white text-agro-dark placeholder-gray-400;
+        @apply w-full px-4 py-3 border border-gray-300 rounded-lg 
+               focus:outline-none focus:ring-2 focus:ring-agro-primary 
+               focus:border-transparent transition-all duration-200 
+               bg-white text-agro-dark placeholder-gray-400;
     }
-    
+
     .input-modern:disabled {
         @apply bg-gray-50 cursor-not-allowed;
     }
-    
-    /* Tablas */
-    .table-modern {
-        @apply w-full divide-y divide-gray-200;
-    }
-    
-    .table-modern thead {
-        @apply bg-agro-sand;
-    }
-    
-    .table-modern thead th {
-        @apply px-6 py-4 text-left text-xs font-semibold text-agro-dark uppercase tracking-wider;
-    }
-    
-    .table-modern tbody tr {
-        @apply hover:bg-gray-50 transition-colors duration-150;
-    }
-    
-    .table-modern tbody td {
-        @apply px-6 py-4 whitespace-nowrap text-sm text-gray-700;
-    }
-    
-    /* Badges */
-    .badge {
-        @apply px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center;
-    }
-    
-    .badge-success {
-        @apply bg-green-100 text-green-700;
-    }
-    
-    .badge-warning {
-        @apply bg-yellow-100 text-yellow-700;
-    }
-    
-    .badge-danger {
-        @apply bg-red-100 text-red-700;
-    }
-    
-    .badge-info {
-        @apply bg-blue-100 text-blue-700;
-    }
-    
-    /* Alerts */
-    .alert {
-        @apply p-4 rounded-lg border-l-4 shadow-sm;
-    }
-    
-    .alert-success {
-        @apply bg-green-50 border-green-500 text-green-700;
-    }
-    
-    .alert-error {
-        @apply bg-red-50 border-red-500 text-red-700;
-    }
-    
-    .alert-warning {
-        @apply bg-yellow-50 border-yellow-500 text-yellow-700;
-    }
-    
-    .alert-info {
-        @apply bg-blue-50 border-blue-500 text-blue-700;
-    }
-    
-    /* Stats Cards */
-    .stat-card {
-        @apply card border-l-4;
-    }
-    
-    .stat-card-primary {
-        @apply border-agro-primary;
-    }
-    
-    .stat-card-accent {
-        @apply border-agro-accent;
-    }
-    
-    /* Tabs */
-    .tab-button {
-        @apply px-4 py-4 font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap flex items-center gap-2 transition-colors duration-200;
-    }
-    
-    .tab-button.active {
-        @apply text-agro-primary border-b-2 border-agro-primary;
-    }
-    
-    /* Sidebar */
-    .sidebar-link {
-        @apply flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white;
-    }
-    
-    .sidebar-link.active {
-        @apply bg-white/20 text-white;
-    }
-    
-    /* Loading Spinner */
-    .spinner {
-        @apply animate-spin rounded-full border-2 border-gray-300 border-t-agro-primary;
-    }
+
+    /* puedes seguir con tus otros estilos */
 }

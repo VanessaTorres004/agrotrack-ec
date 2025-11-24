@@ -8,6 +8,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Paleta principal
+        'agro-primary': '#3C8D40',
+        'agro-accent': '#79C86E',
+        'agro-sand': '#F2F0E4',
+        'agro-dark': '#2F2F2F',
+
+        // Paleta verde extendida
         'agro-green': {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -20,6 +27,8 @@ export default {
           800: '#166534',
           900: '#14532d',
         },
+
+        // Paleta dorada extendida
         'agro-gold': {
           50: '#fffbeb',
           100: '#fef3c7',
@@ -31,9 +40,9 @@ export default {
           700: '#b45309',
           800: '#92400e',
           900: '#78350f',
-        }
-      }
+        },
+      },
     },
   },
   plugins: [],
-}
+};
