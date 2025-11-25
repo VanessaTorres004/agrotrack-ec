@@ -13,7 +13,7 @@ class Cultivo extends Model
         'finca_id',
         'nombre',
         'variedad',
-        'area',
+        'hectareas',
         'fecha_siembra',
         'fecha_cosecha_estimada',
         'estado',
