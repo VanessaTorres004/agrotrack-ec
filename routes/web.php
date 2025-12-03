@@ -92,6 +92,13 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('actualizaciones', ActualizacionController::class);
         Route::resource('cosechas', CosechaController::class);
         Route::resource('ventas', VentaController::class);
+        Route::post('cultivos/{cultivo}/recalcular-idc', 
+    [CultivoController::class, 'recalcularIDC'])
+    ->name('cultivos.recalcularIDC');
+
+Route::post('cultivos/{cultivo}/calcular-idc', 
+    [CultivoController::class, 'calcularIndicador'])
+    ->name('cultivos.calcular-idc');
 
         // Maquinaria YA NO va aquí (corregido)
     });
@@ -123,6 +130,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/reportes/csv', [AdminController::class, 'exportarCSV'])
                 ->name('reportes.csv');
         });
+    
 });
 
 require __DIR__.'/auth.php';

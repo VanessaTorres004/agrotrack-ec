@@ -13,14 +13,15 @@ class Actualizacion extends Model
 
     protected $fillable = [
         'cultivo_id',
-        'fecha',
-        'tipo',
-        'observaciones',
+        'fecha_actividad',
+        'tipo_actividad',
+        'descripcion',
         'accion_tomada',
+        'costo',
     ];
 
     protected $casts = [
-        'fecha' => 'date',
+        'fecha_actividad' => 'date',
     ];
 
     public function cultivo()

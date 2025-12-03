@@ -16,6 +16,8 @@ class Cultivo extends Model
         'hectareas',
         'fecha_siembra',
         'fecha_cosecha_estimada',
+        'fecha_cosecha_real',
+        'objetivo_produccion',
         'estado',
         'notas',
     ];
@@ -23,8 +25,10 @@ class Cultivo extends Model
     protected $casts = [
         'fecha_siembra' => 'date',
         'fecha_cosecha_estimada' => 'date',
+        'fecha_cosecha_real' => 'date',
     ];
 
+    // RELACIONES
     public function finca()
     {
         return $this->belongsTo(Finca::class);
@@ -40,11 +44,6 @@ class Cultivo extends Model
         return $this->hasMany(Cosecha::class);
     }
 
-    public function ventas()
-    {
-        return $this->hasMany(Venta::class);
-    }
-
     public function indicadores()
     {
         return $this->hasMany(Indicador::class);
@@ -55,6 +54,7 @@ class Cultivo extends Model
         return $this->hasMany(Alerta::class);
     }
 
+    // ATRIBUTOS COMPUTADOS
     public function getIdcActualAttribute()
     {
         return $this->indicadores()->latest()->first()?->idc ?? 0;

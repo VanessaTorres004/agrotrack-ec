@@ -74,18 +74,55 @@ class DashboardController extends Controller
             'productores'
         ));
     }
-
+    
     public function productor()
     {
         $user = auth()->user();
-        $fincas = $user->fincas()->with(['cultivos.indicadores' => function($query) {
-            $query->latest()->limit(1);
-        }])->get();
-        
-        $alertas = Alerta::whereHas('cultivo.finca', function($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->where('leida', false)->latest()->get();
-        
-        return view('productor.dashboard', compact('fincas', 'alertas'));
+
+        // CRÍTICO: Cargar cultivos con su último indicador
+        $cultivos = Cultivo::whereHas('finca', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['finca', 'indicadores' => function($query) {
+                $query->latest()->limit(1);
+            }])
+            ->get();
+
+        // Agregar el indicador como propiedad computada para las vistas
+        $cultivos->each(function($cultivo) {
+            $cultivo->indicador = $cultivo->indicadores->first();
+        });
+
+        // KPI 1: total de cultivos
+        $totalCultivos = $cultivos->count();
+
+        // KPI 2: promedio de IDC
+        $promedioIDC = $cultivos->avg(function ($cultivo) {
+            return $cultivo->indicador?->idc ?? 0;
+        }) ?? 0;
+
+        // KPI 3: cultivos en riesgo (IDC < 60)
+        $cultivosEnRiesgo = $cultivos->filter(function ($cultivo) {
+            return ($cultivo->indicador?->idc ?? 0) < 60;
+        })->count();
+
+        // Alertas activas - Cargar solo los datos necesarios
+        $alertas = Alerta::whereHas('cultivo.finca', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->where('leida', false)
+            ->join('cultivos', 'alertas.cultivo_id', '=', 'cultivos.id')
+            ->select('alertas.*', 'cultivos.nombre as cultivo_nombre')
+            ->latest('alertas.created_at')
+            ->limit(10)
+            ->get();
+
+        return view('productor.dashboard', compact(
+            'cultivos',
+            'alertas',
+            'totalCultivos',
+            'promedioIDC',
+            'cultivosEnRiesgo'
+        ));
     }
 }

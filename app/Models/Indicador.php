@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Indicador extends Model
 {
@@ -24,7 +25,7 @@ class Indicador extends Model
     ];
 
     protected $casts = [
-        'fecha_calculo' => 'date',
+        'fecha_calculo' => 'datetime',
     ];
 
     public function cultivo()
@@ -32,114 +33,157 @@ class Indicador extends Model
         return $this->belongsTo(Cultivo::class);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | MÉTODO PRINCIPAL: CALCULO IDC
+    |--------------------------------------------------------------------------
+    */
     public static function calcularIDC($cultivo_id)
     {
-        $cultivo = Cultivo::find($cultivo_id);
-        
-        // Calcular rendimiento basado en cosechas
-        $rendimiento = self::calcularRendimiento($cultivo);
-        
-        // Calcular oportunidad basado en fechas
-        $oportunidad = self::calcularOportunidad($cultivo);
-        
-        // Calcular calidad basado en cosechas
-        $calidad = self::calcularCalidad($cultivo);
-        
-        // Calcular registro basado en actualizaciones
-        $registro = self::calcularRegistro($cultivo);
-        
-        // Obtener factor climático
-        $factorClima = self::obtenerFactorClima($cultivo);
-        
-        // Aplicar fórmula IDC
-        $idc = (0.50 * $rendimiento + 0.20 * $oportunidad + 0.20 * $calidad + 0.10 * $registro) * $factorClima;
-        
-        // Clasificar
+        $cultivo = Cultivo::with(['cosechas', 'actualizaciones', 'finca.registrosClimaticos'])->findOrFail($cultivo_id);
+
+        // Subindicadores
+        $rendimiento   = self::calcularRendimiento($cultivo);
+        $oportunidad   = self::calcularOportunidad($cultivo);
+        $calidad       = self::calcularCalidad($cultivo);
+        $registro      = self::calcularRegistro($cultivo);
+        $factorClima   = self::obtenerFactorClima($cultivo);
+
+        // Fórmula oficial
+        $base = (0.50 * $rendimiento)
+              + (0.20 * $oportunidad)
+              + (0.20 * $calidad)
+              + (0.10 * $registro);
+
+        $idc = round($base * $factorClima, 2);
+
         $clasificacion = self::clasificarIDC($idc);
-        
-        // Guardar indicador
-        return Indicador::create([
-            'cultivo_id' => $cultivo_id,
-            'fecha_calculo' => now(),
-            'rendimiento' => $rendimiento,
-            'oportunidad' => $oportunidad,
-            'calidad' => $calidad,
-            'registro' => $registro,
-            'factor_clima' => $factorClima,
-            'idc' => $idc,
-            'clasificacion' => $clasificacion,
+
+        return self::create([
+            'cultivo_id'      => $cultivo->id,
+            'fecha_calculo'   => now(),
+            'rendimiento'     => $rendimiento,
+            'oportunidad'     => $oportunidad,
+            'calidad'         => $calidad,
+            'registro'        => $registro,
+            'factor_clima'    => $factorClima,
+            'idc'             => $idc,
+            'clasificacion'   => $clasificacion,
         ]);
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUBINDICADORES
+    |--------------------------------------------------------------------------
+    */
+
+    // 1. Rendimiento (50%)
     private static function calcularRendimiento($cultivo)
     {
-        $cosechas = $cultivo->cosechas;
-        if ($cosechas->isEmpty()) return 50;
-        
-        $totalCosecha = $cosechas->sum('cantidad');
-        $areaHa = $cultivo->hectareas; // Fixed from 'area' to 'hectareas'
-        
-        // Rendimiento por hectárea (simplificado)
-        $rendimientoHa = $areaHa > 0 ? $totalCosecha / $areaHa : 0;
-        
-        // Normalizar a 0-100 (ajustar según cultivo)
-        return min(100, ($rendimientoHa / 10) * 100);
+        if (!$cultivo->objetivo_produccion || $cultivo->objetivo_produccion <= 0) {
+            return 50; // Valor por defecto
+        }
+
+        $produccionReal = $cultivo->cosechas->sum('cantidad_kg');
+
+        $porcentaje = ($produccionReal / $cultivo->objetivo_produccion) * 100;
+
+        return min(100, max(0, $porcentaje));
     }
 
+
+    // 2. Oportunidad (20%)
     private static function calcularOportunidad($cultivo)
     {
-        if (!$cultivo->fecha_cosecha_estimada) return 70;
-        
-        $diasTranscurridos = now()->diffInDays($cultivo->fecha_siembra);
-        $diasEstimados = $cultivo->fecha_cosecha_estimada->diffInDays($cultivo->fecha_siembra);
-        
-        if ($diasEstimados == 0) return 70;
-        
-        $porcentajeProgreso = ($diasTranscurridos / $diasEstimados) * 100;
-        
-        // Penalizar si está muy atrasado o adelantado
-        if ($porcentajeProgreso > 110) return 60;
-        if ($porcentajeProgreso < 80) return 80;
-        
-        return 85;
+        if (!$cultivo->fecha_cosecha_estimada) {
+            return 70; // No estimado = valor neutro
+        }
+
+        if (!$cultivo->fecha_cosecha_real) {
+            return 80; // Aun no cosechado
+        }
+
+        $difDias = $cultivo->fecha_cosecha_real->diffInDays($cultivo->fecha_cosecha_estimada);
+
+        // Cada día fuera de la ventana óptima (+/- 7 días) resta 2 puntos
+        if ($difDias <= 7) return 100;
+
+        $penalizacion = ($difDias - 7) * 2;
+
+        return max(40, 100 - $penalizacion);
     }
 
+
+    // 3. Calidad (20%)
     private static function calcularCalidad($cultivo)
     {
-        $cosechas = $cultivo->cosechas;
-        if ($cosechas->isEmpty()) return 70;
-        
-        $calidadMap = ['excelente' => 100, 'buena' => 80, 'regular' => 60, 'mala' => 40];
-        $promedioCalidad = $cosechas->avg(fn($c) => $calidadMap[$c->calidad] ?? 70);
-        
-        return $promedioCalidad;
+        if ($cultivo->cosechas->isEmpty()) {
+            return 70;
+        }
+
+        $map = [
+            'excelente' => 1.00,
+            'buena'     => 0.95,
+            'regular'   => 0.85,
+            'mala'      => 0.70,
+        ];
+
+        $promedioBase = $cultivo->cosechas->avg(function ($c) {
+            return 100 * (1 - (($c->mermas ?? 0) / 100));
+        });
+
+        $promedioFactor = $cultivo->cosechas->avg(function ($c) use ($map) {
+            return $map[$c->calidad] ?? 0.90;
+        });
+
+        return round($promedioBase * $promedioFactor, 2);
     }
 
+
+    // 4. Registro (10%)
     private static function calcularRegistro($cultivo)
     {
-        $actualizaciones = $cultivo->actualizaciones()->where('fecha', '>=', now()->subDays(30))->count();
-        
-        // Más actualizaciones = mejor registro
-        if ($actualizaciones >= 8) return 100;
-        if ($actualizaciones >= 4) return 80;
-        if ($actualizaciones >= 2) return 60;
-        
-        return 40;
+        $totalSemanas = 12; // ventana de 3 meses
+
+        $semanasConActualizaciones = $cultivo->actualizaciones
+            ->where('fecha_actividad', '>=', now()->subWeeks($totalSemanas))
+            ->groupBy(function ($a) {
+                return Carbon::parse($a->fecha_actividad)->format('W');
+            })
+            ->count();
+
+        return round(($semanasConActualizaciones / $totalSemanas) * 100, 2);
     }
 
+
+    // Factor clima
     private static function obtenerFactorClima($cultivo)
     {
-        $finca = $cultivo->finca;
-        $registroClima = $finca->registrosClimaticos()->latest()->first();
-        
-        return $registroClima?->factor_clima ?? 1.00;
+        $ultimoClima = $cultivo->finca->registrosClimaticos->sortByDesc('fecha')->first();
+
+        if (!$ultimoClima) return 1.00;
+
+        // Si la columna eventos tiene helada, sequía, granizo, etc:
+        if ($ultimoClima->eventos) {
+            if (stripos($ultimoClima->eventos, 'helada') !== false)   return 0.95;
+            if (stripos($ultimoClima->eventos, 'sequía') !== false)  return 0.95;
+            if (stripos($ultimoClima->eventos, 'granizo') !== false) return 0.95;
+        }
+
+        return $ultimoClima->factor_clima ?? 1.00;
     }
 
+
+    // Clasificación final
     private static function clasificarIDC($idc)
     {
-        if ($idc >= 90) return 'excelente';
-        if ($idc >= 80) return 'bueno';
-        if ($idc >= 60) return 'en_riesgo';
-        return 'critico';
+        return match (true) {
+            $idc >= 90 => 'excelente',
+            $idc >= 80 => 'bueno',
+            $idc >= 60 => 'en_riesgo',
+            default    => 'critico',
+        };
     }
 }
