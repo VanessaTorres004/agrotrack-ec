@@ -139,7 +139,7 @@
     
     <!-- Charts and Alerts Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- IDC Chart - Fixed centered layout -->
+        <!-- IDC Chart -->
         <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
             <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
                 <i class="fas fa-chart-bar text-primary-600 mr-2"></i>
@@ -170,30 +170,31 @@
             </div>
         </div>
         
-    <!-- Alertas Section -->
-    <div class="bg-white rounded-xl shadow-md p-6">
-        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-            <i class="fas fa-bell text-red-600 mr-2"></i>
-            Alertas Recientes
-        </h3>
-        <div class="space-y-3 max-h-[340px] overflow-y-auto">
-            @forelse($alertas as $alerta)
-            <div class="border-l-4 {{ $alerta->prioridad === 'alta' ? 'border-red-500 bg-red-50' : ($alerta->prioridad === 'media' ? 'border-yellow-500 bg-yellow-50' : 'border-blue-500 bg-blue-50') }} p-3 rounded-r-lg">
-                <div class="flex items-start space-x-2">
-                    <i class="fas fa-info-circle {{ $alerta->prioridad === 'alta' ? 'text-red-600' : ($alerta->prioridad === 'media' ? 'text-yellow-600' : 'text-blue-600') }} mt-1"></i>
-                    <div class="flex-1">
-                        <p class="text-sm font-semibold text-gray-900">{{ $alerta->cultivo_nombre }}</p>
-                        <p class="text-xs text-gray-700 mt-1">{{ $alerta->mensaje }}</p>
-                        <p class="text-xs text-gray-500 mt-1">{{ $alerta->created_at->diffForHumans() }}</p>
+        <!-- Alertas Section -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-bell text-red-600 mr-2"></i>
+                Alertas Recientes
+            </h3>
+            <div class="space-y-3 max-h-[340px] overflow-y-auto">
+                @forelse($alertas as $alerta)
+                <div class="border-l-4 {{ $alerta->prioridad === 'alta' ? 'border-red-500 bg-red-50' : ($alerta->prioridad === 'media' ? 'border-yellow-500 bg-yellow-50' : 'border-blue-500 bg-blue-50') }} p-3 rounded-r-lg">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-info-circle {{ $alerta->prioridad === 'alta' ? 'text-red-600' : ($alerta->prioridad === 'media' ? 'text-yellow-600' : 'text-blue-600') }} mt-1"></i>
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-900">{{ $alerta->cultivo_nombre }}</p>
+                            <p class="text-xs text-gray-700 mt-1">{{ $alerta->mensaje }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $alerta->created_at->diffForHumans() }}</p>
+                        </div>
                     </div>
                 </div>
+                @empty
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-check-circle text-4xl mb-2"></i>
+                    <p class="text-sm">No hay alertas pendientes</p>
+                </div>
+                @endforelse
             </div>
-            @empty
-            <div class="text-center py-8 text-gray-500">
-                <i class="fas fa-check-circle text-4xl mb-2"></i>
-                <p class="text-sm">No hay alertas pendientes</p>
-            </div>
-            @endforelse
         </div>
     </div>
     

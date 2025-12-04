@@ -41,10 +41,9 @@
         </div>
 
         <span class="inline-block px-4 py-2 rounded-full text-sm font-semibold
-            @if($cultivo->estado == 'sembrado') bg-green-100 text-green-800
-            @elseif($cultivo->estado == 'desarrollo') bg-blue-100 text-blue-800
+            @if($cultivo->estado == 'activo') bg-green-100 text-green-800
             @elseif($cultivo->estado == 'cosechado') bg-yellow-100 text-yellow-800
-            @elseif($cultivo->estado == 'finalizado') bg-gray-100 text-gray-800
+            @elseif($cultivo->estado == 'inactivo') bg-gray-100 text-gray-800
             @else bg-purple-100 text-purple-800
             @endif">
             {{ ucfirst($cultivo->estado) }}
@@ -92,7 +91,7 @@
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold text-gray-800">Índice de Desempeño del Cultivo (IDC)</h2>
-                        <form action="{{ route('cultivos.calcular-indicador', $cultivo) }}" method="POST">
+                        <form action="{{ route('cultivos.recalcularIDC', $cultivo) }}" method="POST">
                             @csrf
                             <button type="submit" 
                                     class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition text-sm">
@@ -132,7 +131,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div class="text-center p-3 bg-gray-50 rounded-lg">
                             <div class="text-2xl font-bold text-gray-800">{{ number_format($indicadorActual->rendimiento, 2) }}</div>
                             <div class="text-xs text-gray-600 mt-1">Rendimiento</div>
@@ -142,12 +141,8 @@
                             <div class="text-xs text-gray-600 mt-1">Calidad</div>
                         </div>
                         <div class="text-center p-3 bg-gray-50 rounded-lg">
-                            <div class="text-2xl font-bold text-gray-800">{{ number_format($indicadorActual->eficiencia_costos, 2) }}</div>
-                            <div class="text-xs text-gray-600 mt-1">Eficiencia</div>
-                        </div>
-                        <div class="text-center p-3 bg-gray-50 rounded-lg">
-                            <div class="text-2xl font-bold text-gray-800">{{ number_format($indicadorActual->sostenibilidad, 2) }}</div>
-                            <div class="text-xs text-gray-600 mt-1">Sostenibilidad</div>
+                            <div class="text-2xl font-bold text-gray-800">{{ number_format($indicadorActual->oportunidad, 2) }}</div>
+                            <div class="text-xs text-gray-600 mt-1">Oportunidad</div>
                         </div>
                     </div>
 
@@ -176,7 +171,7 @@
                             <div class="border-l-4 border-blue-500 pl-4 py-2">
                                 <div class="flex justify-between items-start">
                                     <div>
-                                        <div class="font-semibold text-gray-800">{{ $actualizacion->tipo }}</div>
+                                        <div class="font-semibold text-gray-800">{{ $actualizacion->tipo_actividad }}</div>
                                         <p class="text-sm text-gray-600 mt-1">{{ $actualizacion->descripcion }}</p>
                                     </div>
                                     <span class="text-xs text-gray-500">
@@ -209,14 +204,16 @@
                                     <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Fecha</th>
                                     <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Cantidad</th>
                                     <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Calidad</th>
+                                    <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Precio/kg</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($cultivo->cosechas as $cosecha)
                                     <tr class="border-b">
-                                        <td class="px-4 py-2 text-sm">{{ $cosecha->fecha->format('d/m/Y') }}</td>
-                                        <td class="px-4 py-2 text-sm text-right">{{ number_format($cosecha->cantidad, 2) }} {{ $cosecha->unidad }}</td>
+                                        <td class="px-4 py-2 text-sm">{{ $cosecha->fecha_cosecha->format('d/m/Y') }}</td>
+                                        <td class="px-4 py-2 text-sm text-right">{{ number_format($cosecha->cantidad_kg, 2) }} kg</td>
                                         <td class="px-4 py-2 text-sm">{{ ucfirst($cosecha->calidad) }}</td>
+                                        <td class="px-4 py-2 text-sm text-right">${{ number_format($cosecha->precio_kg, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -233,7 +230,7 @@
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Alertas</h2>
 
                 @php
-                    $alertasActivas = $cultivo->alertas->where('estado', 'activa');
+                    $alertasActivas = $cultivo->alertas->where('leida', false);
                 @endphp
 
                 @if($alertasActivas->isEmpty())
@@ -245,18 +242,18 @@
                     <div class="space-y-3">
                         @foreach($alertasActivas as $alerta)
                             <div class="p-3 rounded-lg border-l-4
-                                @if($alerta->tipo == 'critica') bg-red-50 border-red-500
-                                @elseif($alerta->tipo == 'advertencia') bg-yellow-50 border-yellow-500
+                                @if($alerta->prioridad == 'alta') bg-red-50 border-red-500
+                                @elseif($alerta->prioridad == 'media') bg-yellow-50 border-yellow-500
                                 @else bg-blue-50 border-blue-500
                                 @endif">
                                 <div class="flex items-start">
                                     <i class="fas fa-exclamation-triangle mt-1 mr-2
-                                        @if($alerta->tipo == 'critica') text-red-500
-                                        @elseif($alerta->tipo == 'advertencia') text-yellow-500
+                                        @if($alerta->prioridad == 'alta') text-red-500
+                                        @elseif($alerta->prioridad == 'media') text-yellow-500
                                         @else text-blue-500
                                         @endif"></i>
                                     <div class="flex-1">
-                                        <div class="font-semibold text-sm text-gray-800">{{ ucfirst($alerta->tipo) }}</div>
+                                        <div class="font-semibold text-sm text-gray-800">{{ $alerta->titulo }}</div>
                                         <p class="text-xs text-gray-600 mt-1">{{ $alerta->mensaje }}</p>
                                         <div class="text-xs text-gray-500 mt-1">
                                             {{ $alerta->created_at->diffForHumans() }}

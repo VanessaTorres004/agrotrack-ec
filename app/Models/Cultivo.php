@@ -54,6 +54,11 @@ class Cultivo extends Model
         return $this->hasMany(Alerta::class);
     }
 
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class);
+    }
+
     // ATRIBUTOS COMPUTADOS
     public function getIdcActualAttribute()
     {

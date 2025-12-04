@@ -83,23 +83,19 @@ class CultivoController extends Controller
             },
             'finca.registrosClimaticos' => function($query) {
                 $query->latest()->limit(5);
+            },
+            'ventas' => function($query) {
+                $query->latest();
             }
         ]);
 
         // Agregar indicador como propiedad
         $cultivo->indicador = $cultivo->indicadores->first();
 
-        // DEBUG: Ver qué datos se están cargando
-        \Log::info('Cultivo Show Debug:', [
-            'cultivo_id' => $cultivo->id,
-            'nombre' => $cultivo->nombre,
-            'tiene_indicador' => $cultivo->indicador ? 'SI' : 'NO',
-            'idc' => $cultivo->indicador?->idc,
-            'actualizaciones_count' => $cultivo->actualizaciones->count(),
-            'cosechas_count' => $cultivo->cosechas->count(),
-        ]);
+        // Cargar registros climáticos para la vista
+        $registrosClima = $cultivo->finca->registrosClimaticos;
 
-        return view('cultivos.show', compact('cultivo'));
+        return view('cultivos.show', compact('cultivo', 'registrosClima'));
     }
 
     public function edit(Cultivo $cultivo)
@@ -167,4 +163,4 @@ class CultivoController extends Controller
 
         return back()->with('success', 'IDC actualizado: ' . number_format($indicador->idc, 2));
     }
-}
+}   

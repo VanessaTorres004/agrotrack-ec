@@ -60,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('predicciones/calcular', [PrediccionSemillaController::class, 'calcular'])->name('predicciones.calcular');
     Route::get('predicciones/{prediccion}', [PrediccionSemillaController::class, 'show'])->name('predicciones.show');
 
-    // MAQUINARIA — YA NO ESTÁ SOLO PARA PRODUCTOR (corregido)
+    // MAQUINARIA
     Route::resource('maquinaria', MaquinariaController::class);
 
     Route::get('maquinaria/{maquinaria}/mantenimientos', 
@@ -85,22 +85,15 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:productor'])->group(function () {
 
         Route::resource('cultivos', CultivoController::class);
-        Route::post('cultivos/{cultivo}/calcular-idc', 
-            [CultivoController::class, 'calcularIndicador'])
-            ->name('cultivos.calcular-idc');
+        
+        // Ruta para recalcular IDC
+        Route::post('cultivos/{cultivo}/recalcular-idc', 
+            [CultivoController::class, 'recalcularIDC'])
+            ->name('cultivos.recalcularIDC');
 
         Route::resource('actualizaciones', ActualizacionController::class);
         Route::resource('cosechas', CosechaController::class);
         Route::resource('ventas', VentaController::class);
-        Route::post('cultivos/{cultivo}/recalcular-idc', 
-    [CultivoController::class, 'recalcularIDC'])
-    ->name('cultivos.recalcularIDC');
-
-Route::post('cultivos/{cultivo}/calcular-idc', 
-    [CultivoController::class, 'calcularIndicador'])
-    ->name('cultivos.calcular-idc');
-
-        // Maquinaria YA NO va aquí (corregido)
     });
 
 
